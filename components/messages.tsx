@@ -1,10 +1,13 @@
 import { ChatRequestOptions, Message } from 'ai';
 import { PreviewMessage, ThinkingMessage } from './message';
-import { useScrollToBottom } from './use-scroll-to-bottom';
+import { useScrollToBottom, useSetScrollToBottom } from './use-scroll-to-bottom';
 import { Overview } from './overview';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
+import { ArrowBigDown } from 'lucide-react';
+import { ArrowUpIcon } from './icons';
+import { Button } from './ui/button';
 
 interface MessagesProps {
   chatId: string;
@@ -32,11 +35,12 @@ function PureMessages({
 }: MessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
+  const {isAtBottom , goToBottom} = useSetScrollToBottom(messagesContainerRef)
 
   return (
     <div
       ref={messagesContainerRef}
-      className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
+      className="flex relative flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
     >
       {/* {messages.length === 0 && <Overview />} */}
 
@@ -65,8 +69,17 @@ function PureMessages({
         ref={messagesEndRef}
         className="shrink-0 min-w-[24px] min-h-[24px]"
       />
+      {isAtBottom ? null : <BottomArrow onClick={()=>{goToBottom()}}/>}
     </div>
   );
+}
+
+function BottomArrow({onClick}:{onClick: ()=>void}) {
+  return <div className='bottom-2 sticky flex justify-center'>
+    <Button onClick={onClick} className='w-[30px] h-[20px] rotate-180 rounded-full p-1.5 h-fit bg-slate-300'>
+      <ArrowUpIcon size={20} />
+    </Button>
+  </div> 
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
