@@ -2,10 +2,9 @@ import { ChatRequestOptions, Message } from 'ai';
 import { PreviewMessage, ThinkingMessage } from './message';
 import { useScrollToBottom, useSetScrollToBottom } from './use-scroll-to-bottom';
 import { Overview } from './overview';
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 import { Vote } from '@/lib/db/schema';
 import equal from 'fast-deep-equal';
-import { ArrowBigDown } from 'lucide-react';
 import { ArrowUpIcon } from './icons';
 import { Button } from './ui/button';
 
@@ -67,19 +66,19 @@ function PureMessages({
 
       <div
         ref={messagesEndRef}
-        className="shrink-0 min-w-[24px] min-h-[24px]"
+        className="shrink-0 min-w-[24px] min-h-[2px]"
       />
-      {isAtBottom ? null : <BottomArrow onClick={()=>{goToBottom()}}/>}
+      {isAtBottom ? null : <BottomArrow showArrow={!isAtBottom} onClick={()=>{goToBottom()}}/>}
     </div>
   );
 }
 
-function BottomArrow({onClick}:{onClick: ()=>void}) {
+function BottomArrow({showArrow, onClick}:{showArrow:boolean, onClick: ()=>void}) {
   return <div className='bottom-2 sticky flex justify-center'>
-    <Button onClick={onClick} className='w-[30px] h-[20px] rotate-180 rounded-full p-1.5 h-fit bg-slate-300'>
-      <ArrowUpIcon size={20} />
+    <Button variant={"ghost"} onClick={onClick} className={`${showArrow ? "w-[30px] h-[20px]": "w-0 h-0"} bg-zinc-600 transform-all duration-1000 rotate-180 rounded-full p-1.5 h-fit`}>
+      <ArrowUpIcon />
     </Button>
-  </div> 
+    </div>
 }
 
 export const Messages = memo(PureMessages, (prevProps, nextProps) => {
